@@ -1,91 +1,178 @@
-import { NavLink } from "react-router-dom";
-import { 
-  Home, 
-  Info, 
-  LayoutDashboard, 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  Building2, 
-  ClipboardList, 
-  Award,
-  UserCircle,
-  Settings,
-  ChevronLeft
-} from "lucide-react";
 import { cn } from "@/lib/utils";
+import React, { useState, createContext, useContext } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 
-interface SidebarProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+// Define the Links type
+interface Links {
+  label: string;
+  href: string;
+  icon: React.JSX.Element | React.ReactNode;
 }
 
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Info, label: "About", path: "/about" },
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Users, label: "Students", path: "/students" },
-  { icon: GraduationCap, label: "Faculty", path: "/faculty" },
-  { icon: BookOpen, label: "Courses", path: "/courses" },
-  { icon: Building2, label: "Departments", path: "/departments" },
-  { icon: ClipboardList, label: "Enrollments", path: "/enrollments" },
-  { icon: Award, label: "Grades", path: "/grades" },
-  { icon: UserCircle, label: "Profile", path: "/profile" },
-  { icon: Settings, label: "Settings", path: "/settings" },
-];
+// Sidebar context props
+interface SidebarContextProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  animate: boolean;
+}
 
-export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+// Create Sidebar Context
+const SidebarContext = createContext<SidebarContextProps | undefined>(
+  undefined
+);
+
+// Custom hook to use sidebar context
+export const useSidebar = () => {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+};
+
+// Sidebar provider component
+export const SidebarProvider = ({
+  children,
+  open: openProp,
+  setOpen: setOpenProp,
+  animate = true,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  animate?: boolean;
+}) => {
+  const [openState, setOpenState] = useState(false);
+
+  const open = openProp !== undefined ? openProp : openState;
+  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
+
   return (
-    <aside
-      className={cn(
-        "bg-card border-r border-border transition-all duration-300 ease-in-out flex flex-col relative",
-        isOpen ? "w-64" : "w-20"
-      )}
-    >
-      <div className="p-6 flex items-center justify-between border-b border-border">
-        {isOpen && (
-          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            UniManage
-          </h1>
-        )}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 hover:bg-accent rounded-lg transition-colors ml-auto"
-        >
-          <ChevronLeft
-            className={cn(
-              "w-5 h-5 transition-transform",
-              !isOpen && "rotate-180"
-            )}
-          />
-        </button>
-      </div>
+    <SidebarContext.Provider value={{ open, setOpen, animate }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+};
 
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
-          {navItems.map((item) => (
-            <li key={item.path}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-                    "hover:bg-accent hover:text-accent-foreground",
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-primary"
-                      : "text-foreground"
-                  )
-                }
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                {isOpen && (
-                  <span className="font-medium truncate">{item.label}</span>
-                )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+// Sidebar container
+export const Sidebar = ({
+  children,
+  open,
+  setOpen,
+  animate,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  animate?: boolean;
+}) => {
+  return (
+    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
+      {children}
+    </SidebarProvider>
+  );
+};
+
+// Sidebar body component (Desktop + Mobile)
+export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+  return (
+    <>
+      <DesktopSidebar {...props} />
+      <MobileSidebar {...props} />
+    </>
+  );
+};
+
+// Desktop sidebar
+export const DesktopSidebar = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof motion.div>) => {
+  const { open, setOpen, animate } = useSidebar();
+  return (
+    <motion.div
+      className={cn(
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
+        className
+      )}
+      animate={{
+        width: animate ? (open ? "300px" : "60px") : "300px",
+      }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// Mobile sidebar
+export const MobileSidebar = ({
+  ...props
+}:any) => {
+  const { open, setOpen } = useSidebar();
+  return (
+  
+      <AnimatePresence >
+        {open && (
+          <motion.div
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "-100%", opacity: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+            className={cn(
+              "fixed h-full w-full inset-0 md:hidden bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between"
+            )}
+          >
+            <div
+              className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
+              onClick={() => setOpen(!open)}
+            >
+              <IconX />
+            </div>
+            {props.children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+  );
+};
+
+// Sidebar link
+export const SidebarLink = ({
+  link,
+  className,
+  ...props
+}: {
+  link: Links;
+  className?: string;
+}) => {
+  const { open, animate } = useSidebar();
+  return (
+    <Link
+      to={link.href}
+      className={cn(
+        "flex items-center justify-start gap-2 relative z-1 group/sidebar py-2",
+        className
+      )}
+      {...props}
+    >
+      {link.icon}
+      <motion.span
+        animate={{
+          display: animate ? (open ? "inline-block" : "none") : "inline-block",
+          opacity: animate ? (open ? 1 : 0) : 1,
+        }}
+        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+      >
+        {link.label}
+      </motion.span>
+    </Link>
   );
 };

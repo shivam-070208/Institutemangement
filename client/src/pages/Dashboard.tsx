@@ -5,22 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
 const Dashboard = () => {
-  const enrollmentData = [
-    { month: "Jan", students: 400 },
-    { month: "Feb", students: 450 },
-    { month: "Mar", students: 520 },
-    { month: "Apr", students: 580 },
-    { month: "May", students: 620 },
-    { month: "Jun", students: 680 },
-  ];
 
-  const gradeData = [
-    { grade: "A", count: 120 },
-    { grade: "B", count: 250 },
-    { grade: "C", count: 180 },
-    { grade: "D", count: 90 },
-    { grade: "F", count: 30 },
-  ];
 
   return (
     <div className="space-y-6">

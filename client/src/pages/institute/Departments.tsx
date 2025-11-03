@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DataTable } from "@/components/common/DataTable";
+import { IconPlus } from "@tabler/icons-react";
 
 interface Department {
   id: number;
@@ -25,9 +26,12 @@ const Departments = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex w-full justify-between flex-wrap">
       <div>
         <h1 className="text-3xl font-bold">Departments</h1>
         <p className="text-muted-foreground">Manage departments and their structure</p>
+      </div>
+      <div className="flex bg-white shadow-xs cursor-pointer items-center font-semibold  h-fit px-4  py-2 rounded-sm shadow-input"><IconPlus size={15} /> Add </div>
       </div>
 
       <DataTable
