@@ -29,7 +29,7 @@ export const DashboardLayout = () => {
   ), []);
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden w-screen">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
           <div className="flex flex-col gap-1" onMouseLeave={()=>sethovered(null)}>
@@ -46,7 +46,7 @@ export const DashboardLayout = () => {
       <div className="flex-1 flex flex-col ">
         <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
         
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 w-screen p-6  md:w-full">
           <Outlet />
         </main>
       </div>

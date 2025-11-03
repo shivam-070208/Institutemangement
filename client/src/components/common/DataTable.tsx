@@ -43,7 +43,7 @@ export function DataTable<T extends { id: string | number }>({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -62,7 +62,7 @@ export function DataTable<T extends { id: string | number }>({
         )}
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>

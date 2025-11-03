@@ -1,54 +1,167 @@
-import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
-
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import React from "react";
+import { motion, AnimatePresence, useAnimate } from "motion/react";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
-
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
-  return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-        day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
-        day_range_end: "day-range-end",
-        day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-      }}
-      {...props}
-    />
-  );
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  children: React.ReactNode;
 }
-Calendar.displayName = "Calendar";
 
-export { Calendar };
+export const Button = ({ className, children, ...props }: ButtonProps) => {
+  const [scope, animate] = useAnimate();
+
+  const animateLoading = async () => {
+    await animate(
+      ".loader",
+      {
+        width: "20px",
+        scale: 1,
+        display: "block",
+      },
+      {
+        duration: 0.2,
+      },
+    );
+  };
+
+  const animateSuccess = async () => {
+    await animate(
+      ".loader",
+      {
+        width: "0px",
+        scale: 0,
+        display: "none",
+      },
+      {
+        duration: 0.2,
+      },
+    );
+    await animate(
+      ".check",
+      {
+        width: "20px",
+        scale: 1,
+        display: "block",
+      },
+      {
+        duration: 0.2,
+      },
+    );
+
+    await animate(
+      ".check",
+      {
+        width: "0px",
+        scale: 0,
+        display: "none",
+      },
+      {
+        delay: 2,
+        duration: 0.2,
+      },
+    );
+  };
+
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    await animateLoading();
+    await props.onClick?.(event);
+    await animateSuccess();
+  };
+
+  const {
+    onClick,
+    onDrag,
+    onDragStart,
+    onDragEnd,
+    onAnimationStart,
+    onAnimationEnd,
+    ...buttonProps
+  } = props;
+
+  return (
+    <motion.button
+      layout
+      layoutId="button"
+      ref={scope}
+      className={cn(
+        "flex min-w-[120px] cursor-pointer items-center justify-center gap-2 rounded-full bg-green-500 px-4 py-2 font-medium text-white ring-offset-2 transition duration-200 hover:ring-2 hover:ring-green-500 dark:ring-offset-black",
+        className,
+      )}
+      {...buttonProps}
+      onClick={handleClick}
+    >
+      <motion.div layout className="flex items-center gap-2">
+        <Loader />
+        <CheckIcon />
+        <motion.span layout>{children}</motion.span>
+      </motion.div>
+    </motion.button>
+  );
+};
+
+const Loader = () => {
+  return (
+    <motion.svg
+      animate={{
+        rotate: [0, 360],
+      }}
+      initial={{
+        scale: 0,
+        width: 0,
+        display: "none",
+      }}
+      style={{
+        scale: 0.5,
+        display: "none",
+      }}
+      transition={{
+        duration: 0.3,
+        repeat: Infinity,
+        ease: "linear",
+      }}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="loader text-white"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3a9 9 0 1 0 9 9" />
+    </motion.svg>
+  );
+};
+
+const CheckIcon = () => {
+  return (
+    <motion.svg
+      initial={{
+        scale: 0,
+        width: 0,
+        display: "none",
+      }}
+      style={{
+        scale: 0.5,
+        display: "none",
+      }}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="check text-white"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+      <path d="M9 12l2 2l4 -4" />
+    </motion.svg>
+  );
+};
