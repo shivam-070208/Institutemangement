@@ -104,14 +104,7 @@ export const getUser = async (req, res) => {
     if (!req.user) {
       return res.status(400).json({ message: "Invalid user data" });
     }
-    const { user } = req;
-    const isUser = await client.query(
-      "Select * from university where Gmail = $1",
-      [user]
-    );
-    if (!isUser.rows)
-      return res.status(401).json({ message: "user not exist" });
-    return res.status(200).json({ user: isUser.rows[0] });
+    return res.status(200).json({ user: req.user });
   } catch (error) {
     console.log(error);
 

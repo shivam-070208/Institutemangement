@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import "./config/Connectdb.js";
 import cookieParser from "cookie-parser";
-import inStituteauth from './routes/InstituteAuth.js'
+import inStituteauth from './routes/institute.auth.route.js'
 if(process.env.NODE_ENV !== "production"||!process.env.NODE_ENV){ 
 import('./config/db_queries/CreateTable.js')
 import('./config/db_queries/Migrate_20251103.js')
