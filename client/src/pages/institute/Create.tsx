@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Select } from "@/components/ui/select";
 import {
   IconArrowLeft,
-  IconBrandGoogle,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -163,7 +162,7 @@ export default function Create() {
         Welcome to Instam
       </h2>
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Login to <strong>UniM</strong>, Manage your Institute.
+        Create  your <b>UniM</b> Account, Manage your Institute.
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
@@ -230,7 +229,7 @@ const BottomGradient = () => {
   );
 };
 
-const LabelInputContainer = ({
+export const LabelInputContainer = ({
   children,
   className,
 }: {

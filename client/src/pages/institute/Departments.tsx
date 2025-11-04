@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable } from "@/components/common/DataTable";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,31 +14,12 @@ interface Department {
 }
 
 const Departments = () => {
-  const [departments, setDepartments] = useState<Department[]>([
-    {
-      id: 1,
-      name: "Computer Science",
-      head: "Dr. Sarah Williams",
-      faculty: 45,
-      students: 850,
-    },
-    {
-      id: 2,
-      name: "Mathematics",
-      head: "Dr. Michael Chen",
-      faculty: 32,
-      students: 620,
-    },
-    {
-      id: 3,
-      name: "Physics",
-      head: "Dr. Emily Brown",
-      faculty: 28,
-      students: 480,
-    },
-  ]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [newDept, setNewDept] = useState({ name: "", head: "", contact: "" });
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const columns = [
     { key: "name", label: "Department" },
@@ -47,9 +28,36 @@ const Departments = () => {
     { key: "students", label: "Students" },
   ];
 
+  const fetchDepartments = async (page: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/fetchDepartMent?page=${page}&limit=5`,{
+        credentials:'include'
+      });
+      const data = await res.json();
+
+      if (page === 1) {
+        setDepartments(data.departments??[]);
+      } else {
+        setDepartments((prev) => [...prev, ...data.departments]);
+      }
+
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartments(page);
+  }, [page]);
+
   const handleAdd = () => {
     if (!newDept.name || !newDept.head || !newDept.contact)
-      return  toast("Fill all details⚠️");
+      return toast("Fill all details⚠️");
+
     const newDepartment = {
       id: departments.length + 1,
       name: newDept.name,
@@ -57,20 +65,27 @@ const Departments = () => {
       faculty: 0,
       students: 0,
     };
+
     setDepartments([...departments, newDepartment]);
     setShowModal(false);
     setNewDept({ name: "", head: "", contact: "" });
-    toast("New DepartMent Added🎉")
+    toast("New Department Added🎉");
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const bottom =
+      e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.clientHeight;
+    if (bottom && !loading && page < totalPages) {
+      setPage((prev) => prev + 1);
+    }
   };
 
   return (
-    <div className="space-y-6 relative px-2 w-[100%] flex flex-col  flex-wrap">
+    <div className="space-y-6 relative px-2 w-[100%] flex flex-col flex-wrap">
       <div className="flex w-full justify-between flex-wrap flex-col md:flex-row">
         <div>
           <h1 className="text-3xl font-bold">Departments</h1>
-          <p className="text-muted-foreground">
-            Manage departments and their structure
-          </p>
+          <p className="text-muted-foreground">Manage departments and their structure</p>
         </div>
         <div
           onClick={() => setShowModal(true)}
@@ -79,7 +94,7 @@ const Departments = () => {
           <IconPlus size={15} /> Add
         </div>
       </div>
-      <div className="max-w-full ">
+      <div className="max-w-full">
         <DataTable
           data={departments}
           columns={columns}
@@ -87,10 +102,31 @@ const Departments = () => {
         />
       </div>
 
+      <div
+        onScroll={handleScroll}
+        className="overflow-auto max-h-[400px] space-y-4 border border-neutral-300 rounded-md p-4"
+      >
+        {departments.length === 0 && !loading ? (
+          <p>No departments found.</p>
+        ) : null}
+
+        {loading && <p>Loading more departments...</p>}
+      </div>
+
+      {!loading && page < totalPages && (
+        <div className="flex justify-center">
+          <button
+            onClick={() => setPage(page + 1)}
+            className="px-4 py-2 rounded-md bg-black text-white hover:border-3 border-neutral-400 transition-all"
+          >
+            Load More
+          </button>
+        </div>
+      )}
+
       <AnimatePresence>
         {showModal && (
           <>
-            {/* Frosted glass blur background */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -99,7 +135,6 @@ const Departments = () => {
               onClick={() => setShowModal(false)}
             />
 
-            {/* Centered popup form */}
             <motion.div
               layoutId="add-department-popup"
               initial={{ opacity: 0, y: -40 }}
@@ -125,7 +160,6 @@ const Departments = () => {
                   onChange={(e) =>
                     setNewDept({ ...newDept, name: e.target.value })
                   }
-                  
                 />
                 <Input
                   type="text"
