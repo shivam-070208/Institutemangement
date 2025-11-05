@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar, SidebarBody, SidebarLink } from "./Sidebar";
 import { Navbar } from "./Navbar";
-import { IconBuilding,  IconLayoutDashboard, IconUsers, IconBooks, IconSettings } from "@tabler/icons-react";
+import { IconBuilding,  IconLayoutDashboard, IconUsers, IconBooks, IconSettings, IconChalkboardTeacher } from "@tabler/icons-react";
 import { motion } from "motion/react";
 export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -13,6 +13,7 @@ export const DashboardLayout = () => {
     [
       { label: "DashBoard", href: "/institute/create", icon: <IconLayoutDashboard size={18} /> },
       { label: "Departments", href: "/institute/departments", icon: <IconBuilding size={18} /> },
+      { label: "Faculty", href: "/institute/faculty", icon: <IconChalkboardTeacher size={18} /> },
       { label: "Students", href: "/institute/students", icon: <IconUsers size={18} /> },
       { label: "Courses", href: "/institute/courses", icon: <IconBooks size={18} /> },
       { label: "Settings", href: "/institute/settings", icon: <IconSettings size={18} /> },

@@ -9,6 +9,8 @@ import { DashboardLayout } from "./components/layout/DashboardLayout";
 import Create from "./pages/institute/Create";
 import { InstituteAuthProvider } from "./components/layout/InstituteAuthProvider";
 import { Login } from "./pages";
+import Faculty from "./pages/institute/Faculty";
+import Course from "./pages/institute/Course";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,22 @@ const App = () => (
               element={
                 <InstituteAuthProvider>
                   <Departments />
+                </InstituteAuthProvider>
+              }
+            />
+            <Route
+              path="/institute/courses"
+              element={
+                <InstituteAuthProvider>
+                  <Course />
+                </InstituteAuthProvider>
+              }
+            />
+            <Route
+              path="/institute/faculty"
+              element={
+                <InstituteAuthProvider>
+                  <Faculty />
                 </InstituteAuthProvider>
               }
             />

@@ -17,3 +17,10 @@ const config = {
 
 // Use a Pool to keep connections open across requests
 export const client = new pg.Pool(config);
+
+client.on("error", (err) => {
+    console.error("⚠️ PostgreSQL client error:", err.message);
+    client.end();
+
+  });
+  

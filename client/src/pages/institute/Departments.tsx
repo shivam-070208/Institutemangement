@@ -92,7 +92,7 @@ const Departments = () => {
       }
       let department = data?.department;
       department.id = department?.department_id;
-     
+
      setDepartments((prev)=>[...prev,department])
       setShowModal(false);
       setNewDept({ Name: "", HOD: "", Contact_Mail: "" });

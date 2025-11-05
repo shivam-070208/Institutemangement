@@ -53,3 +53,78 @@ export const fetchDepartment = async (req, res) => {
     res.status(500).json({ message: "Server-side error" });
   }
 };
+export const addFaculty = async (req, res) => {
+  try {
+    const uid = req.user?.id;
+    const { name, subjects, contact_email,password } = req.body;
+
+    // Basic validation
+    if (!uid || !name || !subjects || !contact_email||!password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Insert query
+    const insertQuery = `
+      INSERT INTO faculty (uid, name, subjects, contact_email,password)
+      VALUES ($1, $2, $3, $4,$5)
+      RETURNING *;
+    `;
+
+    // Execute query
+    const result = await client.query(insertQuery, [
+      uid,
+      name,
+      subjects,
+      contact_email,
+      password
+    ]);
+
+    res.status(201).json({
+      message: "Faculty added successfully",
+      faculty: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error adding faculty:", error);
+    res.status(500).json({ message: "Server-side error" });
+  }
+};
+
+
+export const fetchFaculty = async (req, res) => {
+  try {
+    const uid = req.user?.id;
+    const { page = 1, limit = 5 } = req.query;
+
+    if (!uid) return res.status(400).json({ message: "Invalid user. Please login again." });
+
+    const offset = (page - 1) * limit;
+
+    // Fetch paginated faculty
+    const facultyResult = await client.query(
+      `SELECT id AS faculty_id, name, subjects, contact_email, created_at
+       FROM faculty WHERE uid = $1
+       ORDER BY created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [uid, limit, offset]
+    );
+
+    // Get total count for pagination
+    const countResult = await client.query(
+      `SELECT COUNT(*) AS total FROM faculty WHERE uid = $1`,
+      [uid]
+    );
+
+    const total = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({
+      success: true,
+      faculty: facultyResult.rows,
+      totalPages,
+      total,
+    });
+  } catch (error) {
+    console.error("Error fetching faculty:", error);
+    res.status(500).json({ message: "Server-side error" });
+  }
+};
