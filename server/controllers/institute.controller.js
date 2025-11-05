@@ -3,7 +3,8 @@ import { client } from "../config/Connectdb.js";
 export const addDepartMent = async (req, res) => {
   try {
     const { Name, HOD, Contact_Mail } = req.body;
-    const uid = req.user?.uid;
+    const uid = req.user?.id;
+    
     if (!uid || !Name || !HOD || !Contact_Mail) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -29,7 +30,7 @@ export const addDepartMent = async (req, res) => {
 
 export const fetchDepartment = async (req, res) => {
   try {
-    const { uid } = req.user;
+    const uid  = req.user?.id;
     const { page = 1, limit = 20 } = req.query;
   
     

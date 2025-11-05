@@ -40,6 +40,7 @@ export const InstituteSignup = async (req, res) => {
       Admin_Position,
       adminname,
     } = req.body;
+    
     if (
       !uName ||
       !Address ||

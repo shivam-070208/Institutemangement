@@ -6,7 +6,8 @@ import { Select } from "@/components/ui/select";
 import {
   IconArrowLeft,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 
 const getInputItems = (path:string)=>{
@@ -106,19 +107,21 @@ export default function Create() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   const API_BASE = (import.meta as any).env?.VITE_SERVER_URL || "http://localhost:3000";
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+    console.log(name,value);
+    
     setformValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
+     setError(null);
     setSuccess(null);
 
     // basic validation
@@ -146,9 +149,10 @@ export default function Create() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data?.message || "Signup failed");
+        toast(data.message);
       }
-      setSuccess(data?.message || "Signup successful");
+      toast("Signup Success");
+      navigate('/institute/dashboard');
     } catch (err: any) {
       setError(err?.message || "Something went wrong");
     } finally {
@@ -220,7 +224,7 @@ export default function Create() {
   );
 }
 
-const BottomGradient = () => {
+export const BottomGradient = () => {
   return (
     <>
       <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />

@@ -10,6 +10,7 @@ export const isAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const Gmail = decoded?.Gmail;
     
+      
     if (!Gmail) return res.status(400).json({ message: "not a valid token" });
 
     const query = `

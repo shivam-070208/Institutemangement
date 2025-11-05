@@ -6,28 +6,27 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 
 interface Department {
-  id: number;
+  id:Number;
+  department_id: number;
   name: string;
-  head: string;
-  faculty: number;
-  students: number;
+  head_of_department: string;
+  Contact_Mail:string;
 }
 
 const Departments = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newDept, setNewDept] = useState({ name: "", head: "", contact: "" });
+  const [newDept, setNewDept] = useState({ Name: "", HOD: "", Contact_Mail: "" });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const columns = [
     { key: "name", label: "Department" },
-    { key: "head", label: "Department Head" },
-    { key: "faculty", label: "Faculty Members" },
-    { key: "students", label: "Students" },
+    { key: "head_of_department", label: "Department Head" },
+    {key:"contact_email",label:"Head Email"}
   ];
-
+  
   const fetchDepartments = async (page: number) => {
     setLoading(true);
     try {
@@ -35,11 +34,17 @@ const Departments = () => {
         credentials:'include'
       });
       const data = await res.json();
-
+      let department = [];
+     
+         department = data.departments?.map((item)=>{
+          item.id = item.department_id;
+          return item;
+        })
+      
       if (page === 1) {
-        setDepartments(data.departments??[]);
+        setDepartments(department??[]);
       } else {
-        setDepartments((prev) => [...prev, ...data.departments]);
+        setDepartments((prev) => [...prev, ...department]);
       }
 
       setTotalPages(data.totalPages);
@@ -54,24 +59,49 @@ const Departments = () => {
     fetchDepartments(page);
   }, [page]);
 
-  const handleAdd = () => {
-    if (!newDept.name || !newDept.head || !newDept.contact)
-      return toast("Fill all details⚠️");
+  const handleAdd = async () => {
 
+   
+    if (!newDept.Name || !newDept.HOD || !newDept.Contact_Mail) {
+      return toast("Fill all details⚠️");
+    }
+  
+    // Prepare the new department object
     const newDepartment = {
-      id: departments.length + 1,
-      name: newDept.name,
-      head: newDept.head,
+      Name: newDept.Name,
+      HOD: newDept.HOD,
+      Contact_Mail: newDept.Contact_Mail,
       faculty: 0,
       students: 0,
     };
-
-    setDepartments([...departments, newDepartment]);
-    setShowModal(false);
-    setNewDept({ name: "", head: "", contact: "" });
-    toast("New Department Added🎉");
+  
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/addDepartment`, {
+        method: "PUT",
+        credentials:"include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newDepartment),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        return toast(data.message || "Failed to add department⚠️");
+      }
+      let department = data?.department;
+      department.id = department?.department_id;
+     
+     setDepartments((prev)=>[...prev,department])
+      setShowModal(false);
+      setNewDept({ Name: "", HOD: "", Contact_Mail: "" });
+        toast("New Department Added🎉");
+    } catch (error) {
+      toast("An error occurred. Please try again⚠️");
+    }
   };
-
+  
   const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
     const bottom =
       e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.clientHeight;
@@ -96,7 +126,7 @@ const Departments = () => {
       </div>
       <div className="max-w-full">
         <DataTable
-          data={departments}
+          data={departments as any}
           columns={columns}
           searchPlaceholder="Search departments..."
         />
@@ -156,25 +186,25 @@ const Departments = () => {
                 <Input
                   type="text"
                   placeholder="Department Name"
-                  value={newDept.name}
+                  value={newDept.Name}
                   onChange={(e) =>
-                    setNewDept({ ...newDept, name: e.target.value })
+                    setNewDept({ ...newDept, Name: e.target.value })
                   }
                 />
                 <Input
                   type="text"
                   placeholder="Head of Department"
-                  value={newDept.head}
+                  value={newDept.HOD}
                   onChange={(e) =>
-                    setNewDept({ ...newDept, head: e.target.value })
+                    setNewDept({ ...newDept, HOD: e.target.value })
                   }
                 />
                 <Input
                   type="email"
                   placeholder="Contact Email"
-                  value={newDept.contact}
+                  value={newDept.Contact_Mail}
                   onChange={(e) =>
-                    setNewDept({ ...newDept, contact: e.target.value })
+                    setNewDept({ ...newDept, Contact_Mail: e.target.value })
                   }
                 />
               </div>
