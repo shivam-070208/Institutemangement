@@ -1,5 +1,5 @@
 import { client } from "../config/Connectdb.js";
-
+import bcrypt from "bcryptjs";
 export const addDepartMent = async (req, res) => {
   try {
     const { Name, HOD, Contact_Mail } = req.body;
@@ -108,7 +108,6 @@ export const fetchFaculty = async (req, res) => {
       [uid, limit, offset]
     );
 
-    // Get total count for pagination
     const countResult = await client.query(
       `SELECT COUNT(*) AS total FROM faculty WHERE uid = $1`,
       [uid]
@@ -126,5 +125,88 @@ export const fetchFaculty = async (req, res) => {
   } catch (error) {
     console.error("Error fetching faculty:", error);
     res.status(500).json({ message: "Server-side error" });
+  }
+};
+export const addStudent = async (req, res) => {
+  try {
+    const uid = req.user?.id; // university id from auth middleware
+    const { name, email, phone, department_id, semester, section, password } = req.body;
+
+    if (!name || !email || !department_id || !semester || !section || !password) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const query = `
+      INSERT INTO student (uid, department_id, name, email, phone, semester, section, password)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *;
+    `;
+    const values = [uid, department_id, name, email, phone || null, semester, section, hashedPassword];
+
+    const { rows } = await client.query(query, values);
+
+    return res.status(201).json({ message: "Student added successfully ✅", student: rows[0] });
+
+  } catch (error) {
+    console.error("Error adding student:", error);
+    return res.status(500).json({ message: "Server-side error" });
+  }
+};
+export const fetchStudents = async (req, res) => {
+  try {
+    const uid = req.user?.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const offset = (page - 1) * limit;
+
+    const query = `
+      SELECT s.student_id, s.name, s.email, s.phone, s.semester, s.section, d.name AS department
+      FROM student s
+      JOIN department d ON s.department_id = d.department_id
+      WHERE s.uid = $1
+      ORDER BY s.created_at DESC
+      LIMIT $2 OFFSET $3;
+    `;
+    const values = [uid, limit, offset];
+
+    const { rows } = await client.query(query, values);
+
+    const countQuery = `SELECT COUNT(*) FROM student WHERE uid = $1`;
+    const totalStudents = (await client.query(countQuery, [uid])).rows[0].count;
+    const totalPages = Math.ceil(totalStudents / limit);
+
+    return res.json({ students: rows, totalPages });
+
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return res.status(500).json({ message: "Server-side error" });
+  }
+};
+
+ export const dashboardSummary = async (req, res) => {
+  try {
+    const uid = req.user.id;
+
+    const q = async (sql) => (await client.query(sql, [uid])).rows[0]?.count || 0;
+
+    const departments = await q(`SELECT COUNT(*) FROM department WHERE uid = $1`);
+    const faculty = await q(`SELECT COUNT(*) FROM faculty WHERE uid = $1`);
+    const courses = await q(`SELECT COUNT(*) FROM course WHERE uid = $1`);
+    const students = await q(`SELECT COUNT(*) FROM student WHERE uid = $1`);
+
+    const recentStudents = (await client.query(`
+      SELECT s.student_id, s.name, d.name AS department, s.semester, s.section
+      FROM student s
+      JOIN department d ON s.department_id = d.department_id
+      WHERE s.uid = $1
+      ORDER BY s.created_at DESC
+      LIMIT 10
+    `, [uid])).rows;
+
+    res.json({ departments, faculty, courses, students, recentStudents });
+  } catch (err) {
+    res.status(500).json({ message: "Dashboard fetch error" });
   }
 };

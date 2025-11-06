@@ -11,7 +11,7 @@ export const DashboardLayout = () => {
   const [hovered,sethovered] = useState(null)
   const instituteLinks = useMemo(() => (
     [
-      { label: "DashBoard", href: "/institute/create", icon: <IconLayoutDashboard size={18} /> },
+      { label: "DashBoard", href: "/institute/dashboard", icon: <IconLayoutDashboard size={18} /> },
       { label: "Departments", href: "/institute/departments", icon: <IconBuilding size={18} /> },
       { label: "Faculty", href: "/institute/faculty", icon: <IconChalkboardTeacher size={18} /> },
       { label: "Students", href: "/institute/students", icon: <IconUsers size={18} /> },
@@ -30,7 +30,7 @@ export const DashboardLayout = () => {
   ), []);
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden w-screen">
+    <div className="flex h-dvh bg-background overflow-x-hidden max-w-dvw overflow-y-auto">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
           <div className="flex flex-col gap-1" onMouseLeave={()=>sethovered(null)}>

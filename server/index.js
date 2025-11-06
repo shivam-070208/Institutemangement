@@ -51,4 +51,5 @@ app.listen(PORT, () => {
 process.on("exit", () => {
   client.end();
   console.log("🔌 PostgreSQL connection closed");
+  client.connect()
 });
