@@ -60,7 +60,7 @@ export default function Login() {
           setSubmitting(false);
           return;
         }
-        navigate("/institute/department");
+        navigate("/institute/dashboard");
       } catch (err) {
         setError("An unexpected error occurred. Please try again.");
         setSubmitting(false);

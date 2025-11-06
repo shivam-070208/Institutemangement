@@ -67,10 +67,10 @@ function Dashboard() {
   ];
 
   const pieData = [
-    { name: "Departments", value: stats.departments },
-    { name: "Faculty", value: stats.faculty },
-    { name: "Courses", value: stats.courses },
-    { name: "Students", value: stats.students },
+    { name: "Departments", value: 7},
+    { name: "Faculty", value: 6 },
+    { name: "Courses", value: 5 },
+    { name: "Students", value: 4 },
   ];
 
   const semesterData = recent.reduce((acc: any[], cur) => {
