@@ -20,6 +20,7 @@ interface Column<T> {
 interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
+  onClick?: (item: T) => void;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   onAdd?: () => void;
@@ -32,6 +33,7 @@ export function DataTable<T extends { id: string | number }>({
   onEdit,
   onDelete,
   onAdd,
+  onClick,
   searchPlaceholder = "Search...",
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,8 +82,8 @@ export function DataTable<T extends { id: string | number }>({
                 </TableCell>
               </TableRow>
             ) : (
-              filteredData.map((item) => (
-                <TableRow key={item.id}>
+              filteredData.map((item,idx) => (
+                <TableRow onClick={() => onClick && onClick(item)}  key={idx}>
                   {columns.map((column) => (
                     <TableCell key={column.key}>
                       {column.render

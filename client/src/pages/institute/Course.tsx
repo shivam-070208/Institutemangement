@@ -117,7 +117,7 @@ function Course() {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/addCourse`, {
-        method: "PUT",
+        method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(courseData),

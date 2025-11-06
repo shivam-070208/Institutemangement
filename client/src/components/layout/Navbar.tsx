@@ -19,7 +19,7 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
   const navigate = useNavigate();
 
   return (
-    <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between">
+    <header className="h-16 border-b border-border bg-card px-6 flex items-center py-2 justify-between">
       <Button
         variant="ghost"
         size="icon"

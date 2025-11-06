@@ -7,14 +7,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 //? imorting pages and component
 import Departments from "./pages/institute/Departments";
 import NotFound from "./pages/NotFound";
-import { DashboardLayout } from "./components/layout/DashboardLayout";
+import { DashboardLayout } from "./components/context/DashboardLayout";
 import Create from "./pages/institute/Create";
 import { InstituteAuthProvider } from "./components/layout/InstituteAuthProvider";
 import { Login } from "./pages";
 import Faculty from "./pages/institute/Faculty";
 import Course from "./pages/institute/Course";
 import Student from "./pages/institute/Student";
-import Dashboard from "./pages/institute/Dashboard";
+import { StudentAuthProvider } from "./components/context/StudentAuthProvider";
+import { StudentDashboard, StudentRegister } from "./pages/student";
+import { InstituteDashboard, StudentDetail } from "./pages/institute";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +27,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} /> */}
-          <Route path="/institute/create" element={<Create />} />
+        <Route path="/institute/create" element={<Create />} />
           <Route path="/login" element={<Login />} />
           <Route
             element={
@@ -36,11 +36,24 @@ const App = () => (
               </InstituteAuthProvider>
             }
           >
-            <Route path="/institute/dashboard" element={<Dashboard />} />
+            <Route path="/institute/dashboard" element={<InstituteDashboard />} />
             <Route path="/institute/departments" element={<Departments />} />
             <Route path="/institute/courses" element={<Course />} />
             <Route path="/institute/faculty" element={<Faculty />} />
             <Route path="/institute/students" element={<Student />} />
+            <Route path="/institute/students/:id" element={<StudentDetail />} />
+
+          </Route>
+          <Route
+            element={
+              <StudentAuthProvider>
+                <DashboardLayout />
+              </StudentAuthProvider>
+            }
+          >
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/register" element={<StudentRegister />} />
+        
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

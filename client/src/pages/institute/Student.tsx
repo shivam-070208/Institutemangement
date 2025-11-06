@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select"; // Assuming your custom Select component
 import { LabelInputContainer } from "./Create";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 interface Department {
   id: number;
@@ -58,6 +59,7 @@ const inputFields = [
 ];
 
 function Student() {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<Student[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -107,7 +109,9 @@ function Student() {
       toast("Failed to load departments ⚠️");
     }
   };
-
+  const onClick=(item:any)=>{
+    navigate(`./${item.student_id}`);
+  }
   useEffect(() => {
     fetchStudents();
     fetchDepartments();
@@ -122,7 +126,7 @@ function Student() {
       const res = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/institute/addStudent`,
         {
-          method: "PUT",
+          method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newStudent),
@@ -173,7 +177,8 @@ function Student() {
         </div>
       </div>
 
-      <DataTable
+      <DataTable 
+      onClick={onClick}
         data={students as any}
         columns={columns}
         searchPlaceholder="Search students..."

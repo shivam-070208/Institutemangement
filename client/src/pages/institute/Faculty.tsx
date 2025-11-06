@@ -75,7 +75,7 @@ function Faculty() {
 
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/addFaculty`, {
-        method: "PUT",
+        method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",

@@ -2,11 +2,18 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { DataTable } from "@/components/common/DataTable";
 import {
-  PieChart, Pie, Cell,LineChart,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Line
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Line,
 } from "recharts";
-
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -20,9 +27,12 @@ function Dashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/dashboardSummary`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/institute/dashboardSummary`,
+        {
+          credentials: "include",
+        }
+      );
       const data = await res.json();
 
       setStats(data);
@@ -94,13 +104,19 @@ function Dashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
         {/* Pie Chart */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <h3 className="text-lg font-semibold mb-4">Overall Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={90}>
+              <Pie
+                data={pieData.map((p) => ({ ...p, value: p.value || 0.0001 }))} // prevents invisible pie
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+              >
                 {pieData.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
@@ -110,7 +126,6 @@ function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Bar Chart */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <h3 className="text-lg font-semibold mb-4">Students per Semester</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -122,13 +137,16 @@ function Dashboard() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-
       </div>
 
       {/* Recent Table */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-2">Recently Added Students</h2>
-        <DataTable data={recent} columns={columns} searchPlaceholder="Search students..." />
+        <DataTable
+          data={recent}
+          columns={columns}
+          searchPlaceholder="Search students..."
+        />
       </div>
     </div>
   );

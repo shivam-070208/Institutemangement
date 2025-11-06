@@ -77,7 +77,7 @@ const Departments = () => {
   
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/addDepartment`, {
-        method: "PUT",
+        method: "POST",
         credentials:"include",
         headers: {
           "Content-Type": "application/json",

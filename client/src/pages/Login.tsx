@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Login() {
-  const [usertype, setUsertype] = useState<string | null>(null);
+  const [usertype, setUsertype] = useState<string | null>("");
   const [submitting, setSubmitting] = useState(false);
   const [Gmail, setGmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,14 +21,15 @@ export default function Login() {
       placeholder: "Email",
       type: "email",
       required: true,
+      autoComplete :"email"
     },
     Password: {
       label: "Password",
       placeholder: "Password",
       type: "password",
       required: true,
-      pattern:
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,24}$",
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,24}$",
+      autoComplete :"current-password"
     },
   };
 
@@ -36,36 +37,61 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setError(null); // Reset any previous error
-
+    setError(null); 
+    const body = JSON.stringify({ Gmail, password });
     if (usertype === "Admin") {
       try {
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/institute/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ Gmail, password }),
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/institute/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body,
+            credentials:"include"
+          }
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
-          toast(data.message||"login failed");
+          toast(data.message || "login failed");
           setSubmitting(false);
           return;
         }
-
-        // If login is successful, redirect to the dashboard or home
-        navigate("/dashboard"); // Update to where you want to redirect after login
+        navigate("/institute/department");
       } catch (err) {
         setError("An unexpected error occurred. Please try again.");
         setSubmitting(false);
       }
-    } else {
-      // For now, if the user is not an Admin, we just log them in without sending any API request
-      navigate("/dashboard"); // Or whatever page you want to send them to
-    }
+    } else if (usertype === "Student") {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/student/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body,
+            credentials: "include",
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          toast(data.message || "Login failed");
+          setSubmitting(false);
+          return;
+        }
+        navigate("/student/dashboard"); // Adjust route as necessary
+      } catch (err) {
+        setError("An unexpected error occurred. Please try again.");
+        setSubmitting(false);
+      }
+    } 
   };
 
   return (
@@ -87,7 +113,9 @@ export default function Login() {
                 {...(value as any)}
                 value={key === "Gmail" ? Gmail : password}
                 onChange={(e) =>
-                  key === "Gmail" ? setGmail(e.target.value) : setPassword(e.target.value)
+                  key === "Gmail"
+                    ? setGmail(e.target.value)
+                    : setPassword(e.target.value)
                 }
               />
             </LabelInputContainer>
@@ -110,9 +138,7 @@ export default function Login() {
           </Select>
         </LabelInputContainer>
 
-        {error && (
-          <div className="mb-4 text-sm text-red-600">{error}</div>
-        )}
+        {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
 
         <button
           className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
