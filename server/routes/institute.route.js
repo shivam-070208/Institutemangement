@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAuth } from "../middleware/auth.middleware.js";
+
 import {
   addDepartMent,
   addFaculty,
@@ -10,15 +10,19 @@ import {
   fetchStudents,
 } from "../controllers/institute.controller.js";
 import { addCourse, fetchCourses } from "../controllers/course.controller.js";
+import { isInstituteAuth } from "../middleware/auth.middleware.js";
+import { createEnrollment, getStudentWithEnrollment } from "../controllers/enrollment.controller.js";
 const router = Router();
 
-router.put("/addDepartment", isAuth, addDepartMent);
-router.get("/fetchDepartMent", isAuth, fetchDepartment);
-router.put("/addfaculty", isAuth, addFaculty);
-router.get("/fetchFaculty", isAuth, fetchFaculty);
-router.get("/fetchCourse", isAuth, fetchCourses);
-router.put("/addCourse", isAuth, addCourse);
-router.put("/addStudent", isAuth, addStudent);
-router.get("/fetchStudent", isAuth, fetchStudents);
-router.get("/dashboardSummary", isAuth, dashboardSummary);
+router.post("/addDepartment", isInstituteAuth, addDepartMent);
+router.get("/fetchDepartMent", isInstituteAuth, fetchDepartment);
+router.post("/addfaculty", isInstituteAuth, addFaculty);
+router.get("/fetchFaculty", isInstituteAuth, fetchFaculty);
+router.get("/fetchCourse", isInstituteAuth, fetchCourses);
+router.post("/addCourse", isInstituteAuth, addCourse);
+router.post("/addStudent", isInstituteAuth, addStudent);
+router.get("/fetchStudent", isInstituteAuth, fetchStudents);
+router.get("/dashboardSummary", isInstituteAuth, dashboardSummary);
+router.get("/student/:student_id/details",isInstituteAuth,getStudentWithEnrollment)
+router.post("/enrollment",isInstituteAuth,createEnrollment);
 export default router;

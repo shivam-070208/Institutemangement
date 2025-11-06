@@ -82,7 +82,7 @@ export const DashboardLayout = () => {
       },
       {
         label: "Settings",
-        href: "/student/register",
+        href: "/student/setting",
         icon: <IconRegistered size={18} />,
       },
     ],

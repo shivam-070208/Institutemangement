@@ -98,6 +98,7 @@ export const DesktopSidebar = ({
         "h-full px-4 py-4 sticky top-0  hidden md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
         className
       )}
+      key={"shhshs"}
       animate={{
         width: animate ? (open ? "300px" : "60px") : "300px",
       }}

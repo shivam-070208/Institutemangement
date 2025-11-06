@@ -17,6 +17,7 @@ import Student from "./pages/institute/Student";
 import { StudentAuthProvider } from "./components/context/StudentAuthProvider";
 import { StudentDashboard, StudentRegister } from "./pages/student";
 import { InstituteDashboard, StudentDetail } from "./pages/institute";
+import HomePage from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<HomePage />} />
         <Route path="/institute/create" element={<Create />} />
           <Route path="/login" element={<Login />} />
           <Route

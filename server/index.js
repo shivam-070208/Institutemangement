@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import "./config/Connectdb.js";
 import cookieParser from "cookie-parser";
+
 import inStituteauthRoute from './routes/institute.auth.route.js'
 import instituteRoute from './routes/institute.route.js'
+import studentRoute from './routes/student.route.js'
 import { client } from "./config/Connectdb.js";
 if(process.env.NODE_ENV !== "production"||!process.env.NODE_ENV){ 
 import('./config/db_queries/CreateTable.js')
@@ -41,7 +43,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/institute/auth',inStituteauthRoute);
-app.use('/api/institute',instituteRoute)
+app.use('/api/institute',instituteRoute);
+app.use('/api/student',studentRoute);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -49,7 +53,13 @@ app.listen(PORT, () => {
 
 
 process.on("exit", () => {
-  client.end();
-  console.log("🔌 PostgreSQL connection closed");
-  client.connect()
+  try {
+    
+    client.end();
+    console.log("🔌 PostgreSQL connection closed");
+    client.connect()
+  } catch (error) {
+    console.log(error.message);
+    
+  }
 });
