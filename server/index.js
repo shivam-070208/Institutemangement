@@ -4,9 +4,9 @@ import cors from "cors";
 import "./config/Connectdb.js";
 import cookieParser from "cookie-parser";
 
-import inStituteauthRoute from './routes/institute.auth.route.js'
-import instituteRoute from './routes/institute.route.js'
-import studentRoute from './routes/student.route.js'
+import inStituteauthRoute from './src/routes/institute.auth.route.js';
+import instituteRoute from './src/routes/institute.route.js';
+import studentRoute from './src/routes/student.route.js';
 import { client } from "./config/Connectdb.js";
 if(process.env.NODE_ENV !== "production"||!process.env.NODE_ENV){ 
 import('./config/db_queries/CreateTable.js')

@@ -107,7 +107,10 @@ export function DataTable<T extends { id: string | number }>({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onDelete(item)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onDelete(item);}}
                             className="text-destructive hover:text-destructive"
                           >
                             <Trash2 className="w-4 h-4" />

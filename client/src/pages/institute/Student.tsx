@@ -4,10 +4,11 @@ import { IconPlus, IconX } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select"; // Assuming your custom Select component
+import { Select } from "@/components/ui/select";
 import { LabelInputContainer } from "./Create";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
+import { ConfirmPopup } from "@/components/ui/confirm-popup";
 
 interface Department {
   id: number;
@@ -73,6 +74,10 @@ function Student() {
     password: "",
   });
 
+  // State for popup confirm dialog
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Student | null>(null);
+
   const fetchStudents = async () => {
     try {
       const res = await fetch(
@@ -109,9 +114,52 @@ function Student() {
       toast("Failed to load departments ⚠️");
     }
   };
-  const onClick=(item:any)=>{
+
+  const onClick = (item: any) => {
     navigate(`./${item.student_id}`);
-  }
+  };
+
+  // Show confirmation on delete rather than alert
+  const handleDelete = (item: Student) => {
+    setPendingDelete(item);
+    setConfirmOpen(true);
+  };
+
+  // Handles the confirmation popup acceptance
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/institute/student/${pendingDelete.student_id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        toast(data?.message || "Failed to delete student ⚠️");
+        setConfirmOpen(false);
+        setPendingDelete(null);
+        return;
+      }
+      toast("Student removed successfully 🗑️");
+      setConfirmOpen(false);
+      setPendingDelete(null);
+      fetchStudents();
+    } catch {
+      toast("Server Error ⚠️");
+      setConfirmOpen(false);
+      setPendingDelete(null);
+    }
+  };
+
+  // Handles cancellation of confirmation
+  const cancelDelete = () => {
+    setConfirmOpen(false);
+    setPendingDelete(null);
+  };
+
   useEffect(() => {
     fetchStudents();
     fetchDepartments();
@@ -177,25 +225,43 @@ function Student() {
         </div>
       </div>
 
-      <DataTable 
-      onClick={onClick}
+      <DataTable
+        onClick={onClick}
+        onDelete={handleDelete}
         data={students as any}
         columns={columns}
         searchPlaceholder="Search students..."
+      />
+
+        <ConfirmPopup
+        open={confirmOpen}
+        title="Delete Student"
+        message={
+          pendingDelete
+            ? `Are you sure you want to permanently delete "${pendingDelete.name}"? This action cannot be undone.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onClose={cancelDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
       />
 
       <AnimatePresence>
         {showModal && (
           <>
             <motion.div
-            initial={{opacity:0}}
-            animate={{opacity:1}}
-            exit={{opacity:0}}
-              className="fixed inset-0 -top-4 backdrop-blur-md z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 -top-4 z-40"
               onClick={() => setShowModal(false)}
             />
 
-            <motion.div exit={{opacity:0}} className="fixed top-10 right-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-xl border rounded-2xl p-6 w-[90%] max-w-md shadow-lg z-50">
+            <motion.div
+              exit={{ opacity: 0 }}
+              className="fixed top-10 right-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-xl border rounded-2xl p-6 w-[90%] max-w-md shadow-lg z-50"
+            >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Add Student</h2>
                 <IconX
@@ -272,3 +338,5 @@ function Student() {
 }
 
 export default Student;
+
+

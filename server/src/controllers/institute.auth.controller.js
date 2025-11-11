@@ -1,7 +1,7 @@
-import { client } from "../config/Connectdb.js";
+import { client } from "../../config/Connectdb.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { cookieOptions } from "../config/cookieoption.js";
+import { cookieOptions } from "../../config/cookieoption.js";
 
 export const InstituteLogin = async (req, res) => {
   const { Gmail, password } = req.body;

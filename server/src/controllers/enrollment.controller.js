@@ -1,4 +1,4 @@
-import { client } from "../config/Connectdb.js";
+import { client } from "../../config/Connectdb.js";
 
 export const getStudentWithEnrollment = async (req, res) => {
   try {
