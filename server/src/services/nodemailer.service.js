@@ -9,16 +9,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Utility function to send email
-/**
- * Send an email to a recipient.
- * @param {string} to - Recipient's email address.
- * @param {Object} data - Mail data (subject, text, html).
- * @param {string} data.subject - Email subject.
- * @param {string} [data.text] - Plain text body.
- * @param {string} [data.html] - HTML body (optional).
- * @returns {Promise<Object>} - Resolves with nodemailer response or rejects with error.
- */
 export async function sendMail(to, data) {
   const mailOptions = {
     from: process.env.EMAIL_USER, // sender address

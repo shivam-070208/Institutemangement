@@ -8,15 +8,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Departments from "./pages/institute/Departments";
 import NotFound from "./pages/NotFound";
 import { DashboardLayout } from "./components/context/DashboardLayout";
-import Create from "./pages/institute/Create";
+
 import { InstituteAuthProvider } from "./components/layout/InstituteAuthProvider";
 import { Login } from "./pages";
-import Faculty from "./pages/institute/Faculty";
-import Course from "./pages/institute/Course";
-import Student from "./pages/institute/Student";
+
 import { StudentAuthProvider } from "./components/context/StudentAuthProvider";
 import { StudentDashboard, StudentRegister } from "./pages/student";
-import { InstituteDashboard, StudentDetail } from "./pages/institute";
+import { Course, Create, Faculty, FacultyDetails, InstituteDashboard, Student, StudentDetail } from "./pages/institute";
 import HomePage from "./pages/Home";
 
 const queryClient = new QueryClient();
@@ -44,6 +42,7 @@ const App = () => (
             <Route path="/institute/faculty" element={<Faculty />} />
             <Route path="/institute/students" element={<Student />} />
             <Route path="/institute/students/:id" element={<StudentDetail />} />
+            <Route path="/institute/faculty/:id" element={<FacultyDetails />} />
 
           </Route>
           <Route

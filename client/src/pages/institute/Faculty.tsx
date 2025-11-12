@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DataTable } from "@/components/common/DataTable";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,11 +18,11 @@ interface Faculty {
 function Faculty() {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newFaculty, setNewFaculty] = useState({ 
-    name: "", 
-    subjects: "", 
-    contact_email: "", 
-    password: "" 
+  const [newFaculty, setNewFaculty] = useState({
+    name: "",
+    subjects: "",
+    contact_email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -30,6 +31,8 @@ function Faculty() {
   // For delete confirmation
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Faculty | null>(null);
+
+  const navigate = useNavigate();
 
   const columns = [
     { key: "name", label: "Faculty Name" },
@@ -161,7 +164,11 @@ function Faculty() {
     setPendingDelete(null);
   };
 
-  // Optionally, DataTable could take onClick for row click and onDelete
+  // On row click, navigate to faculty detail page
+  const handleFacultyClick = (faculty: Faculty) => {
+    navigate(`/institute/faculty/${faculty.id}`);
+  };
+
   return (
     <div className="space-y-6 relative px-2 w-full flex flex-col flex-wrap">
       <div className="flex w-full justify-between flex-wrap flex-col md:flex-row">
@@ -185,6 +192,7 @@ function Faculty() {
           columns={columns}
           searchPlaceholder="Search faculty..."
           onDelete={handleDelete}
+          onClick={handleFacultyClick}
         />
       </div>
 
