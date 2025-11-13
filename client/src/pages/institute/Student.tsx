@@ -38,6 +38,8 @@ const inputFields = [
     label: "Phone",
     type: "text",
     placeholder: "Enter phone number",
+    maxLength:10,
+    minLength:10
   },
   {
     key: "semester",

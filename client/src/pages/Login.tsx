@@ -6,6 +6,7 @@ import { BottomGradient, LabelInputContainer } from "./institute/Create";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { LinkIcon } from "lucide-react";
 
 export default function Login() {
   const [usertype, setUsertype] = useState<string | null>("");
@@ -21,7 +22,7 @@ export default function Login() {
       placeholder: "Email",
       type: "email",
       required: true,
-      autoComplete :"email"
+      autoComplete: "email",
     },
     Password: {
       label: "Password",
@@ -29,7 +30,7 @@ export default function Login() {
       type: "password",
       required: true,
       pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,24}$",
-      autoComplete :"current-password"
+      autoComplete: "current-password",
     },
   };
 
@@ -37,7 +38,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setError(null); 
+    setError(null);
     const body = JSON.stringify({ Gmail, password });
     if (usertype === "Admin") {
       try {
@@ -49,7 +50,7 @@ export default function Login() {
               "Content-Type": "application/json",
             },
             body,
-            credentials:"include"
+            credentials: "include",
           }
         );
 
@@ -91,7 +92,7 @@ export default function Login() {
         setError("An unexpected error occurred. Please try again.");
         setSubmitting(false);
       }
-    } 
+    }
   };
 
   return (
@@ -145,7 +146,7 @@ export default function Login() {
           type="submit"
           disabled={submitting}
         >
-          {submitting ? "Submitting..." : "Sign up →"}
+          {submitting ? "Submitting..." : "Login →"}
           <BottomGradient />
         </button>
 
@@ -160,6 +161,14 @@ export default function Login() {
             <span className="text-sm text-neutral-700 dark:text-neutral-300">
               GoBack
             </span>
+            <BottomGradient />
+          </Link>
+          <Link
+            to={"/institute/create"}
+            className="group/btn relative block py-2 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]  text-center"
+            type="submit"
+          >
+            Signup → 
             <BottomGradient />
           </Link>
         </div>
